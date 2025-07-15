@@ -64,9 +64,9 @@ const Login = ({ setToken }) => {
 
       <div className="flex flex-col justify-center w-1/3 p-8">
           <h2 className="text-3xl font-bold text-white">Welcome</h2>
-          <h2 className="text-3xl font-bold text-white"><span className='text-red-200'>NATIONAL SCHOOLS OF EXCELLENCE</span> & <span className='text-green-500'>STEM EDUCATION</span> </h2>
+          <h2 className="text-3xl font-bold text-white"><span className='text-red-200'></span> & <span className='text-green-500'>STEM EDUCATION</span> </h2>
           <p className="text-gray-100 mt-2">
-          Manage Schools and Activities
+         OVERSEAS STUDENTS
           </p>
         </div>
       <div className='bg-violet-950 shadow-md rounded-lg px-8 py-6 max-w-md ml-40'>
