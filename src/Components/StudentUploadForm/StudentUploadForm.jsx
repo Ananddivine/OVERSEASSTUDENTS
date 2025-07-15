@@ -27,13 +27,11 @@ const StudentUploadForm = () => {
     nid: null,
   });
 
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-
 
   const handleContactChange = (index, value) => {
     const updatedContacts = [...form.contactNumbers];
@@ -58,7 +56,10 @@ const StudentUploadForm = () => {
     formData.append('file', file);
     formData.append('type', type);
     const res = await axiosInstance.post('/api/students/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data',  Authorization: `Bearer ${token}` },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
     });
     return res.data.fileUrl;
   };
@@ -79,7 +80,6 @@ const StudentUploadForm = () => {
     }
 
     try {
-      // Upload files first
       const uploadedData = {};
       for (let key in files) {
         if (files[key]) {
@@ -91,7 +91,6 @@ const StudentUploadForm = () => {
         }
       }
 
-      // Combine everything
       const payload = {
         ...form,
         ...uploadedData,
@@ -106,50 +105,172 @@ const StudentUploadForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-6 text-blue-600">Student Document Upload</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-blue-950 py-10 px-40">
+   <div className="max-w-6xl rounded-xl shadow-lg p-8 bg-white/30 backdrop-blur-md border border-white/40">
+        <h2 className="text-3xl font-bold text-white mb-8">
+          Student Document Upload
+        </h2>
 
-        <div className="grid grid-cols-2 gap-4">
-          <input type="text" name="name" placeholder="Full Name" onChange={handleInputChange} className="input" />
-          <input type="number" name="age" placeholder="Age" onChange={handleInputChange} className="input" />
-          <select name="gender" onChange={handleInputChange} className="input">
-            <option value="">Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-          <input type="email" name="currentEmail" placeholder="Update Email (optional)" onChange={handleInputChange} className="input" />
-          <input type="text" name="accountNumber" placeholder="Account Number" onChange={handleInputChange} className="input" />
-          <input type="text" name="confirmAccountNumber" placeholder="Confirm Account Number" onChange={handleInputChange} className="input" />
-          <input type="text" name="branchName" placeholder="Branch Name" onChange={handleInputChange} className="input" />
-          <input type="text" name="universityName" placeholder="University Name" onChange={handleInputChange} className="input" />
-          <input type="text" name="countryName" placeholder="Country Name" onChange={handleInputChange} className="input" />
-        </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* LEFT SIDE: PERSONAL DETAILS */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-gray-100 mb-2">
+              Personal Information
+            </h3>
 
-        <div>
-          <label className="block font-medium mb-2">Contact Numbers</label>
-          {form.contactNumbers.map((num, index) => (
-            <input key={index} type="text" className="input mb-2" value={num} onChange={(e) => handleContactChange(index, e.target.value)} />
-          ))}
-          <button type="button" onClick={addContactField} className="text-blue-500 hover:underline text-sm">+ Add another</button>
-        </div>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <input
+              type="number"
+              name="age"
+              placeholder="Age"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <select
+              name="gender"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            >
+              <option value="">Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <input
+              type="email"
+              name="currentEmail"
+              placeholder="Update Email (optional)"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
 
-        {/* File Inputs */}
-        <div className="grid grid-cols-2 gap-4">
-          <input type="file" onChange={(e) => handleFileChange(e, 'passport')} className="file-input" />
-          <input type="file" onChange={(e) => handleFileChange(e, 'passportPhoto')} className="file-input" />
-          <input type="file" onChange={(e) => handleFileChange(e, 'stemCertificate')} className="file-input" />
-          <input type="file" onChange={(e) => handleFileChange(e, 'usscCertificate')} className="file-input" />
-          <input type="file" onChange={(e) => handleFileChange(e, 'nid')} className="file-input" />
-          <input type="file" multiple onChange={(e) => handleFileChange(e, 'offerLetters', true)} className="file-input" />
-          <input type="file" multiple onChange={(e) => handleFileChange(e, 'bills', true)} className="file-input" />
-        </div>
+            <h3 className="text-lg font-semibold text-gray-100 mt-4">
+              Contact Numbers
+            </h3>
+            {form.contactNumbers.map((num, index) => (
+              <input
+                key={index}
+                type="text"
+                value={num}
+                onChange={(e) => handleContactChange(index, e.target.value)}
+                className="w-full border rounded-lg p-2 focus:outline-blue-500 mb-2"
+              />
+            ))}
+            <button
+              type="button"
+              onClick={addContactField}
+              className="text-white text-sm hover:text-black"
+            >
+              + Add another contact
+            </button>
 
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-          Submit
-        </button>
-      </form>
+            <h3 className="text-xl font-semibold text-gray-100 mt-4">
+              Bank & University Info
+            </h3>
+            <input
+              type="text"
+              name="accountNumber"
+              placeholder="Account Number"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <input
+              type="text"
+              name="confirmAccountNumber"
+              placeholder="Confirm Account Number"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <input
+              type="text"
+              name="branchName"
+              placeholder="Branch Name"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <input
+              type="text"
+              name="universityName"
+              placeholder="University Name"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+            <input
+              type="text"
+              name="countryName"
+              placeholder="Country Name"
+              onChange={handleInputChange}
+              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+            />
+          </div>
 
+          {/* RIGHT SIDE: FILE UPLOADS */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-100 mb-2">
+              Upload Documents
+            </h3>
+
+            {/* Example of Photo Upload Box */}
+            {[
+              { label: 'Passport', type: 'passport' },
+              { label: 'Passport Photo', type: 'passportPhoto' },
+              { label: 'STEM Certificate', type: 'stemCertificate' },
+              { label: 'USSC Certificate', type: 'usscCertificate' },
+              { label: 'NID', type: 'nid' },
+            ].map((item, index) => (
+              <div key={index} className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
+                <label className="block text-gray-100 font-medium mb-2">
+                  {item.label}
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => handleFileChange(e, item.type)}
+                  className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
+            ))}
+
+            {/* Multiple File Upload */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
+              <label className="block text-gray-100 font-medium mb-2">
+                Offer Letters (Multiple)
+              </label>
+              <input
+                type="file"
+                multiple
+                onChange={(e) => handleFileChange(e, 'offerLetters', true)}
+                className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
+              <label className="block text-gray-100 font-medium mb-2">
+                Bills (Multiple)
+              </label>
+              <input
+                type="file"
+                multiple
+                onChange={(e) => handleFileChange(e, 'bills', true)}
+                className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-2">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
       <ToastContainer />
     </div>
   );
