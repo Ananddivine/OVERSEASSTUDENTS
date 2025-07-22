@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const StudentUploadForm = () => {
   const [form, setForm] = useState({
-    name: '',
+    studentName: '',
     age: '',
     gender: '',
     contactNumbers: [''],
@@ -105,7 +105,7 @@ const StudentUploadForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-950 py-10 px-40">
+    <div className="min-h-screen py-10 px-40 bg-cover bg-center bg-fixed brightness-75" style={{ backgroundImage: `url('/src/assets/bg-snow.jpg')` }}>
    <div className="max-w-6xl rounded-xl shadow-lg p-8 bg-white/30 backdrop-blur-md border border-white/40">
         <h2 className="text-3xl font-bold text-white mb-8">
           Student Document Upload
@@ -120,7 +120,7 @@ const StudentUploadForm = () => {
 
             <input
               type="text"
-              name="name"
+              name="studentName"
               placeholder="Full Name"
               onChange={handleInputChange}
               className="w-full border rounded-lg p-2 focus:outline-blue-500"
@@ -217,6 +217,7 @@ const StudentUploadForm = () => {
 
             {/* Example of Photo Upload Box */}
             {[
+              { label: 'profilepic', type: 'profilepic' },
               { label: 'Passport', type: 'passport' },
               { label: 'Passport Photo', type: 'passportPhoto' },
               { label: 'STEM Certificate', type: 'stemCertificate' },

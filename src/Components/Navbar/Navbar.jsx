@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import navlogo from '../../assets/stem.jpg';
-import { FaDotCircle } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // ✅ Import useLocation
 import axiosInstance from '../axiosInstance/axiosInstance';
 
 const Navbar = ({ setToken }) => {
@@ -9,30 +8,31 @@ const Navbar = ({ setToken }) => {
   const [profile, setProfile] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ To detect current page
   const userEmail = localStorage.getItem('userEmail');
 
   // Fetch profile on mount
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-     const res = await axiosInstance.get('/api/students/profile', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
-    console.log('📷 passportPhoto:', res.data.student?.passportPhoto); // ✅
-    setProfile(res.data.student); // ✅ set correct object
-
-    } catch (err) {
-      console.error('Failed to load profile', err);
-    }
-  };
-  fetchProfile();
-}, []);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axiosInstance.get('/api/students/profile', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setProfile(res.data.student);
+        console.log("fetched profile data: ", res.data.student)
+      } catch (err) {
+        console.error('Failed to load profile', err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
     setToken('');
     setDropdownOpen(false);
+    navigate('/'); // Redirect to home or login after logout (optional)
   };
 
   useEffect(() => {
@@ -45,8 +45,14 @@ useEffect(() => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // ✅ Handle navigation based on current page
   const handleProfileClick = () => {
-    navigate('/StudentProfile');
+    if (location.pathname === '/StudentProfile') {
+      navigate('/StudentUploadForm'); // ✅ Go back to upload page
+    } else {
+      navigate('/StudentProfile'); // ✅ Go to profile page
+    }
+    setDropdownOpen(false);
   };
 
   return (
@@ -59,7 +65,7 @@ useEffect(() => {
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             <img
-              src={profile?.passportPhoto}
+              src={profile?.profilepic}
               alt="Profile"
               className="w-10 h-10 rounded-full border border-gray-300 object-cover"
             />
@@ -68,9 +74,11 @@ useEffect(() => {
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 text-gray-200 bg-gray-900 border border-gray-200 shadow-lg rounded-md overflow-hidden z-50">
               <div className="p-3 border-b">
-                <p className="text-sm font-semibold">{profile?.name || 'User'}</p>
+                <p className="text-sm font-semibold">{profile?.studentName || 'User'}</p>
                 <p className="text-xs text-gray-500 flex items-center gap-1">
-                  <FaDotCircle className="text-green-600" /> {userEmail}
+                   {location.pathname === '/StudentProfile' && (
+            <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+          )}        {userEmail}
                 </p>
               </div>
               <div>
@@ -78,7 +86,9 @@ useEffect(() => {
                   className="text-sm cursor-pointer hover:text-green-500 ml-1 px-1 py-2"
                   onClick={handleProfileClick}
                 >
-                  CLICK SEE YOUR PROFILE
+                  {location.pathname === '/StudentProfile'
+                    ? 'GO BACK TO UPLOAD PROFILE'
+                    : 'CLICK SEE YOUR PROFILE'}
                 </p>
               </div>
               <button
