@@ -73,36 +73,42 @@ const StudentUploadForm = () => {
     return urls;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (form.accountNumber !== form.confirmAccountNumber) {
-      return toast.error('Account numbers do not match');
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (form.accountNumber !== form.confirmAccountNumber) {
+    return toast.error('Account numbers do not match');
+  }
 
-    try {
-      const uploadedData = {};
-      for (let key in files) {
-        if (files[key]) {
-          if (Array.isArray(files[key])) {
-            uploadedData[key] = await uploadMultipleFiles(files[key], key);
-          } else {
-            uploadedData[key] = await uploadSingleFile(files[key], key);
-          }
+  try {
+    const uploadedData = {};
+    for (let key in files) {
+      if (files[key]) {
+        if (Array.isArray(files[key])) {
+          uploadedData[key] = await uploadMultipleFiles(files[key], key);
+        } else {
+          uploadedData[key] = await uploadSingleFile(files[key], key);
         }
       }
-
-      const payload = {
-        ...form,
-        ...uploadedData,
-      };
-
-      await axiosInstance.put('/api/students/update-profile', payload);
-      toast.success('Profile and files uploaded successfully!');
-    } catch (err) {
-      toast.error('Upload failed');
-      console.error(err);
     }
-  };
+
+    const payload = {
+      ...form,
+      ...uploadedData,
+    };
+
+    await axiosInstance.put('/api/students/update-profile', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ FIXED
+      },
+    });
+
+    toast.success('Profile and files uploaded successfully!');
+  } catch (err) {
+    toast.error('Upload failed');
+    console.error('Update Profile Error:', err);
+  }
+};
+
 
   return (
     <div className="min-h-screen py-10 px-40 bg-cover bg-center bg-fixed brightness-75" style={{ backgroundImage: `url('/src/assets/bg-snow.jpg')` }}>
