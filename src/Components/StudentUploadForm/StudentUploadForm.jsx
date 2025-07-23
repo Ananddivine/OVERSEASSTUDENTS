@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axiosInstance from '../axiosInstance/axiosInstance';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import bgSnow from '../../assets/bg-snow.jpg';
 
 const StudentUploadForm = () => {
   const [form, setForm] = useState({
@@ -111,7 +112,8 @@ const StudentUploadForm = () => {
 
 
   return (
-    <div className="min-h-screen py-10 px-40 bg-cover bg-center bg-fixed brightness-75" style={{ backgroundImage: `url('/src/assets/bg-snow.jpg')` }}>
+    <div className="min-h-screen py-10 px-40 bg-cover bg-center bg-fixed brightness-75" style={{ backgroundImage: `url(${bgSnow})` }}
+>
    <div className="max-w-6xl rounded-xl shadow-lg p-8 bg-white/30 backdrop-blur-md border border-white/40">
         <h2 className="text-3xl font-bold text-white mb-8">
           Student Document Upload
