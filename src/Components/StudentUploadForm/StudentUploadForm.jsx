@@ -135,7 +135,7 @@ const handleProfileChange = (e) => {
   <div className="py-10"> 
      <div className="rounded-xl shadow-lg p-10 bg-white/30 backdrop-blur-md border border-white/40 mx-10">
         <h2 className="text-3xl font-bold text-white mb-8">
-          Student Document Upload
+          Student Personal Information
         </h2>
 
        <form onSubmit={handleSubmit} className="mt-2 font-poppins text-cyan-50">
