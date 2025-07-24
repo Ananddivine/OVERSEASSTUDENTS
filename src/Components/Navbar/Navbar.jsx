@@ -74,7 +74,7 @@ const Navbar = ({ setToken }) => {
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 text-gray-200 bg-gray-900 border border-gray-200 shadow-lg rounded-md overflow-hidden z-50">
               <div className="p-3 border-b">
-                <p className="text-sm font-semibold">{profile?.studentName || 'User'}</p>
+                <p className="text-sm font-semibold">{profile?.givenName || 'User'} {profile?.surname}</p>
                 <p className="text-xs text-gray-500 flex items-center gap-1">
                    {location.pathname === '/StudentProfile' && (
             <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
