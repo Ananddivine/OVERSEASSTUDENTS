@@ -65,7 +65,7 @@ const Navbar = ({ setToken }) => {
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             <img
-              src={profile?.profilepic}
+              src={profile?.profileImage}
               alt="Profile"
               className="w-10 h-10 rounded-full border border-gray-300 object-cover"
             />

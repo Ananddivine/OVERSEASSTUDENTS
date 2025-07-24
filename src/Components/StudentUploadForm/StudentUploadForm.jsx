@@ -1,49 +1,67 @@
-import React, { useState } from 'react';
-import axiosInstance from '../axiosInstance/axiosInstance';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import bgSnow from '../../assets/bg-snow.jpg';
+import React, { useState } from "react";
+import axiosInstance from "../axiosInstance/axiosInstance";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import bgsnow from '../../assets/bg-snow.jpg';
+
 
 const StudentUploadForm = () => {
+   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    studentName: '',
-    age: '',
-    gender: '',
-    contactNumbers: [''],
-    accountNumber: '',
-    confirmAccountNumber: '',
-    branchName: '',
-    universityName: '',
-    countryName: '',
-    currentEmail: '',
+    givenName: "",
+    surname: "",
+    dob: "",
+    gender: "",
+    homeDistrict: "",
+    homeProvince: "",
+    email: "",
+    whatsapp: "",
+    parentsEmail: "",
+    parentsWhatsapp: "",
+    countryOfStudy: "",
+    yearOfAdmission: "",
+    universityName: "",
+    courseName: "",
+    currentYear: "",
+    accountName: "",
+    accountNumber: "",
+    bankName: "",
+    branchName: "",
+    passportExpiry: "",
   });
 
+  const [profileImage, setProfileImage] = useState(null);
   const [files, setFiles] = useState({
-    passport: null,
-    passportPhoto: null,
-    stemCertificate: null,
-    usscCertificate: null,
-    offerLetters: [],
-    bills: [],
-    nid: null,
+     profileImage: null,  
+    passportBio: null,
+    stemCerts: [],
+    offerLetter: null,
+    acceptanceLetter: null,
+    semesterReports: [],
+    invoices: [],
+    contractState: null,
+    parentsConsent: null,
+    paymentDetails: [],
   });
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
+  // ✅ Handle Input Changes
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleContactChange = (index, value) => {
-    const updatedContacts = [...form.contactNumbers];
-    updatedContacts[index] = value;
-    setForm({ ...form, contactNumbers: updatedContacts });
-  };
+// ✅ Corrected Profile Image Change Handler
+const handleProfileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setProfileImage(URL.createObjectURL(file));
+    setFiles({ ...files, profileImage: file }); // ✅ changed to profileImage
+  }
+};
 
-  const addContactField = () => {
-    setForm({ ...form, contactNumbers: [...form.contactNumbers, ''] });
-  };
 
+  // ✅ Handle File Changes
   const handleFileChange = (e, type, multiple = false) => {
     if (multiple) {
       setFiles({ ...files, [type]: Array.from(e.target.files) });
@@ -52,19 +70,22 @@ const StudentUploadForm = () => {
     }
   };
 
-  const uploadSingleFile = async (file, type) => {
+   const uploadSingleFile = async (file, type) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-    const res = await axiosInstance.post('/api/students/upload', formData, {
+    formData.append("file", file);
+    formData.append("type", type);
+
+    const res = await axiosInstance.post("/api/students/upload", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     });
+
     return res.data.fileUrl;
   };
 
+  // ✅ Upload Multiple Files
   const uploadMultipleFiles = async (fileList, type) => {
     const urls = [];
     for (let file of fileList) {
@@ -74,214 +95,325 @@ const StudentUploadForm = () => {
     return urls;
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (form.accountNumber !== form.confirmAccountNumber) {
-    return toast.error('Account numbers do not match');
-  }
+  // ✅ Submit Form
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // ✅ Start loading
 
-  try {
-    const uploadedData = {};
-    for (let key in files) {
-      if (files[key]) {
-        if (Array.isArray(files[key])) {
-          uploadedData[key] = await uploadMultipleFiles(files[key], key);
-        } else {
-          uploadedData[key] = await uploadSingleFile(files[key], key);
+    try {
+     const uploadedData = {};
+      for (let key in files) {
+        if (files[key]) {
+          if (Array.isArray(files[key])) {
+            uploadedData[key] = await uploadMultipleFiles(files[key], key);
+          } else {
+            uploadedData[key] = await uploadSingleFile(files[key], key);
+          }
         }
       }
+
+
+      const payload = { ...form, ...uploadedData };
+
+      await axiosInstance.put("/api/students/update-profile", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("Profile and files uploaded successfully!");
+    } catch (err) {
+      toast.error("Upload failed");
+      console.error("Update Profile Error:", err);
+    } finally {
+      setLoading(false); // ✅ Stop loading
     }
-
-    const payload = {
-      ...form,
-      ...uploadedData,
-    };
-
-    await axiosInstance.put('/api/students/update-profile', payload, {
-      headers: {
-        Authorization: `Bearer ${token}`, // ✅ FIXED
-      },
-    });
-
-    toast.success('Profile and files uploaded successfully!');
-  } catch (err) {
-    toast.error('Upload failed');
-    console.error('Update Profile Error:', err);
-  }
-};
-
+  };
 
   return (
-    <div className="min-h-screen py-10 px-40 bg-cover bg-center bg-fixed brightness-75" style={{ backgroundImage: `url(${bgSnow})` }}
->
-   <div className="max-w-6xl rounded-xl shadow-lg p-8 bg-white/30 backdrop-blur-md border border-white/40">
+
+      
+          <div className=" bg-cover bg-center bg-fixed brightness-75 w-full" style={{ backgroundImage: `url(${bgsnow})`, minWidth: "100vw"  }}>
+  <div className="py-10"> 
+     <div className="rounded-xl shadow-lg p-10 bg-white/30 backdrop-blur-md border border-white/40 mx-10">
         <h2 className="text-3xl font-bold text-white mb-8">
           Student Document Upload
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* LEFT SIDE: PERSONAL DETAILS */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-100 mb-2">
-              Personal Information
-            </h3>
+       <form onSubmit={handleSubmit} className="mt-2 font-poppins text-cyan-50">
+        {/* ✅ PERSONAL DETAILS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { label: "Given Name", name: "givenName" },
+            { label: "Surname", name: "surname" },
+            { label: "Date of Birth", name: "dob", type: "date" },
+          ].map((item, i) => (
+            <div key={i}>
+              <label className="block font-semibold">{item.label}</label>
+              <input
+                type={item.type || "text"}
+                name={item.name}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 outline-blue-500 text-gray-800"
+              />
+            </div>
+          ))}
 
-            <input
-              type="text"
-              name="studentName"
-              placeholder="Full Name"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-            <input
-              type="number"
-              name="age"
-              placeholder="Age"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
+          <div>
+            <label className="block font-semibold">Gender</label>
             <select
               name="gender"
               onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
+              className="w-full border rounded p-2 text-gray-800"
             >
-              <option value="">Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
-            <input
-              type="email"
-              name="currentEmail"
-              placeholder="Update Email (optional)"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-
-            <h3 className="text-lg font-semibold text-gray-100 mt-4">
-              Contact Numbers
-            </h3>
-            {form.contactNumbers.map((num, index) => (
-              <input
-                key={index}
-                type="text"
-                value={num}
-                onChange={(e) => handleContactChange(index, e.target.value)}
-                className="w-full border rounded-lg p-2 focus:outline-blue-500 mb-2"
-              />
-            ))}
-            <button
-              type="button"
-              onClick={addContactField}
-              className="text-white text-sm hover:text-black"
-            >
-              + Add another contact
-            </button>
-
-            <h3 className="text-xl font-semibold text-gray-100 mt-4">
-              Bank & University Info
-            </h3>
-            <input
-              type="text"
-              name="accountNumber"
-              placeholder="Account Number"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-            <input
-              type="text"
-              name="confirmAccountNumber"
-              placeholder="Confirm Account Number"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-            <input
-              type="text"
-              name="branchName"
-              placeholder="Branch Name"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-            <input
-              type="text"
-              name="universityName"
-              placeholder="University Name"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
-            <input
-              type="text"
-              name="countryName"
-              placeholder="Country Name"
-              onChange={handleInputChange}
-              className="w-full border rounded-lg p-2 focus:outline-blue-500"
-            />
           </div>
 
-          {/* RIGHT SIDE: FILE UPLOADS */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-gray-100 mb-2">
-              Upload Documents
-            </h3>
+          {[
+            { label: "Home District", name: "homeDistrict" },
+            { label: "Home Province", name: "homeProvince" },
+            { label: "Email", name: "email", type: "email" },
+            { label: "WhatsApp Number", name: "whatsapp" },
+            { label: "Parent's Email", name: "parentsEmail", type: "email" },
+            { label: "Parent's WhatsApp No", name: "parentsWhatsapp" },
+          ].map((item, i) => (
+            <div key={i}>
+              <label className="block font-semibold">{item.label}</label>
+              <input
+                type={item.type || "text"}
+                name={item.name}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 text-gray-800"
+              />
+            </div>
+          ))}
+        </div>
 
-            {/* Example of Photo Upload Box */}
-            {[
-              { label: 'profilepic', type: 'profilepic' },
-              { label: 'Passport', type: 'passport' },
-              { label: 'Passport Photo', type: 'passportPhoto' },
-              { label: 'STEM Certificate', type: 'stemCertificate' },
-              { label: 'USSC Certificate', type: 'usscCertificate' },
-              { label: 'NID', type: 'nid' },
-            ].map((item, index) => (
-              <div key={index} className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
-                <label className="block text-gray-100 font-medium mb-2">
-                  {item.label}
-                </label>
+        {/* ✅ STUDY DETAILS */}
+        <h3 className="text-xl font-bold mt-6">Study Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold">Country of Study</label>
+            <select
+              name="countryOfStudy"
+              onChange={handleInputChange}
+              className="w-full border rounded p-2 text-gray-800"
+            >
+              <option value="">Select</option>
+              {["India", "China", "USA", "Australia", "UK"].map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-semibold">Year of Admission</label>
+            <select
+              name="yearOfAdmission"
+              onChange={handleInputChange}
+              className="w-full border rounded p-2 text-gray-800"
+            >
+              {Array.from({ length: 10 }, (_, i) => 2023 + i).map((year) => (
+                <option key={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+          {[
+            { label: "University Name", name: "universityName" },
+            { label: "Course Name", name: "courseName" },
+          ].map((item, i) => (
+            <div key={i}>
+              <label className="block font-semibold">{item.label}</label>
+              <input
+                type="text"
+                name={item.name}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 text-gray-800"
+              />
+            </div>
+          ))}
+          <div>
+            <label className="block font-semibold">Current Year</label>
+            <select
+              name="currentYear"
+              onChange={handleInputChange}
+              className="w-full border rounded p-2 text-gray-800"
+            >
+              {[1, 2, 3, 4, 5].map((y) => (
+                <option key={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* ✅ BANK DETAILS */}
+        <h3 className="text-xl font-bold mt-6">PNG Bank Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { label: "Account Name", name: "accountName" },
+            { label: "Account Number", name: "accountNumber" },
+            { label: "Bank Name", name: "bankName" },
+            { label: "Branch Name", name: "branchName" },
+          ].map((item, i) => (
+            <div key={i}>
+              <label className="block font-semibold">{item.label}</label>
+              <input
+                type="text"
+                name={item.name}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 text-gray-800"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ PROFILE IMAGE */}
+        <h3 className="text-xl font-bold mt-6">Profile Image</h3>
+        <div className="flex items-center gap-4">
+          <div className="w-32 h-32 border-2 border-dashed border-gray-400 rounded overflow-hidden relative cursor-pointer">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile Preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <label className="w-full h-full flex items-center justify-center text-gray-500 text-sm cursor-pointer">
+                Choose File
                 <input
                   type="file"
-                  onChange={(e) => handleFileChange(e, item.type)}
-                  className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  accept="image/*"
+                  onChange={handleProfileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-              </div>
-            ))}
+              </label>
+            )}
+          </div>
+        </div>
 
-            {/* Multiple File Upload */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
-              <label className="block text-gray-100 font-medium mb-2">
-                Offer Letters (Multiple)
+        {/* ✅ DOCUMENT UPLOADS */}
+        <h3 className="text-xl font-bold mt-6">Document Uploads</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold">Passport Bio Page</label>
+            <input
+              type="file"
+              onChange={(e) => handleFileChange(e, "passportBio")}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Passport Date of Expiry</label>
+            <input
+              type="date"
+              name="passportExpiry"
+              onChange={handleInputChange}
+              className="w-full border rounded p-2 text-gray-800"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">
+              STEM & USSC Certificates
+            </label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, "stemCerts", true)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Offer Letter / I-20</label>
+            <input
+              type="file"
+              onChange={(e) => handleFileChange(e, "offerLetter")}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Acceptance Letter</label>
+            <input
+              type="file"
+              onChange={(e) => handleFileChange(e, "acceptanceLetter")}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Semester Reports</label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, "semesterReports", true)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Invoices</label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, "invoices", true)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">
+              Student Contract with State
+            </label>
+            <input
+              type="file"
+              onChange={(e) => handleFileChange(e, "contractState")}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Parent's Consent</label>
+            <input
+              type="file"
+              onChange={(e) => handleFileChange(e, "parentsConsent")}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* ✅ PAYMENT DETAILS */}
+        <h3 className="text-xl font-bold mt-6">Payment Details Upload</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2].map((sem) => (
+            <div key={sem}>
+              <label className="block font-semibold">
+                Year - Semester {sem}
               </label>
               <input
                 type="file"
+                onChange={(e) => handleFileChange(e, "paymentDetails", true)}
+                className="w-full"
                 multiple
-                onChange={(e) => handleFileChange(e, 'offerLetters', true)}
-                className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
             </div>
+          ))}
+        </div>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition">
-              <label className="block text-gray-100 font-medium mb-2">
-                Bills (Multiple)
-              </label>
-              <input
-                type="file"
-                multiple
-                onChange={(e) => handleFileChange(e, 'bills', true)}
-                className="w-full text-sm text-gray-00 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-2">
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
+        {/* ✅ SUBMIT BUTTON */}
+        <div className="text-center mt-6 items-center">
+          <button
+            type="submit"
+            className="mt-2 w-fit px-4 py-2 rounded-md text-white bg-purple-700 flex items-center justify-center"
+             disabled={loading}
+          >
+            {loading ? (
+              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
+            ) : null}
+            Submit Form
+          </button>
+        </div>
+      </form>
+        <ToastContainer />
       </div>
-      <ToastContainer />
+  </div>
+    
     </div>
+
   );
 };
 

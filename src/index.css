@@ -2,61 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-.active{
-    background-color: #ffebf5;
-    border: 1px solid #ffb7b7;
-}
-
-@media print {
-    /* Hide navbar, footer, and any unwanted UI components */
-    .navbar, .footer {
-      display: none !important;
-    }
-  
-    /* Optionally hide body margins for better PDF layout */
-    body {
-      margin: 0;
-      padding: 0;
-    }
-  
-    /* Ensure the invoice takes full width */
-    .invoice-container {
-      margin: 0;
-      width: 100%;
-    }
-  }
-  
-  @layer utilities {
-  .animate-fade {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-}
-
-@keyframes pulseGreen {
-  0% { background-color: #10b981; }
-  50% { background-color: #059669; }
-  100% { background-color: #10b981; }
-}
-.animate-upload {
-  animation: pulseGreen 1s infinite;
-}
-
-/* in index.css or global styles */
-.input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400;
-}
-.file-input {
-  @apply w-full file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700;
-}
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* ✅ prevents horizontal scroll */
 }
