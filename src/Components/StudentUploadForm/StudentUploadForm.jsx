@@ -130,7 +130,7 @@ const handleProfileChange = (e) => {
 
   return (
 
-      
+      <>
           <div className=" bg-cover bg-center bg-fixed brightness-75 w-full" style={{ backgroundImage: `url(${bgsnow})`, minWidth: "100vw"  }}>
   <div className="py-10"> 
      <div className="rounded-xl shadow-lg p-10 bg-white/30 backdrop-blur-md border border-white/40 mx-10">
@@ -347,15 +347,7 @@ const handleProfileChange = (e) => {
               className="w-full"
             />
           </div>
-          <div>
-            <label className="block font-semibold">Invoices</label>
-            <input
-              type="file"
-              multiple
-              onChange={(e) => handleFileChange(e, "invoices", true)}
-              className="w-full"
-            />
-          </div>
+          
           <div>
             <label className="block font-semibold">
               Student Contract with State
@@ -374,12 +366,23 @@ const handleProfileChange = (e) => {
               className="w-full"
             />
           </div>
+
+          <div className=" text-red-700">
+            <label className="block font-semibold text-red-700 rounded" >Invoices</label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, "invoices", true)}
+              className="w-full "
+            />
+          </div>
+
         </div>
 
         {/* ✅ PAYMENT DETAILS */}
         <h3 className="text-xl font-bold mt-6">Payment Details Upload</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2].map((sem) => (
+          {[1, 2, 3, 4, 5, 6].map((sem) => (
             <div key={sem}>
               <label className="block font-semibold">
                 Year - Semester {sem}
@@ -408,12 +411,22 @@ const handleProfileChange = (e) => {
           </button>
         </div>
       </form>
-        <ToastContainer />
+      
+
       </div>
   </div>
-    
-    </div>
 
+    </div>
+        <ToastContainer
+  position="top-right"
+  autoClose={3000}
+  newestOnTop={true}
+  closeOnClick
+  draggable
+  pauseOnHover
+  style={{ zIndex: 9999 }} // ✅ Higher than modal z-index
+/>
+</>
   );
 };
 

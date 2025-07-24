@@ -117,7 +117,7 @@ const downloadFile = async (url, filename) => {
         <h3 className="text-xl font-semibold text-purple-100 mt-8 mb-3 ">
           Uploaded Documents
         </h3>
-        <ul className="space-y-2 text-gray-100 list-disc pl-5">
+        <ul className=" text-gray-100 list-disc pl-5 grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {profile.passportBio && (
             <FileItem
