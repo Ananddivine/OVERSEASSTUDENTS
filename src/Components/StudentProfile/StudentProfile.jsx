@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance/axiosInstance";
 import bgsnow from '../../assets/bg-snow.jpg';
-
+import './students.css'
 
 const StudentProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -90,10 +90,10 @@ const downloadFile = async (url, filename) => {
         </div>
 
         {/* ✅ Academic Details */}
-        <h3 className="text-xl font-semibold text-purple-700 mt-8 mb-3">
+        <h3 className="text-xl font-semibold text-purple-100 mt-8 mb-3">
           Academic Details
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
           <ProfileField label="Country of Study" value={profile.countryOfStudy} />
           <ProfileField label="Year of Admission" value={profile.yearOfAdmission} />
           <ProfileField label="University Name" value={profile.universityName} />
@@ -102,7 +102,7 @@ const downloadFile = async (url, filename) => {
         </div>
 
         {/* ✅ Banking Information */}
-        <h3 className="text-xl font-semibold text-purple-700 mt-8 mb-3">
+        <h3 className="text-xl font-semibold text-purple-100 mt-8 mb-3">
           Banking Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -114,10 +114,10 @@ const downloadFile = async (url, filename) => {
         </div>
 
         {/* ✅ Uploaded Files */}
-        <h3 className="text-xl font-semibold text-purple-700 mt-8 mb-3">
+        <h3 className="text-xl font-semibold text-purple-100 mt-8 mb-3 ">
           Uploaded Documents
         </h3>
-        <ul className="space-y-2 text-gray-700 list-disc pl-5">
+        <ul className="space-y-2 text-gray-100 list-disc pl-5">
           
           {profile.passportBio && (
             <FileItem
@@ -232,7 +232,7 @@ const FileItem = ({ label, url, filename, downloadFile }) => (
     {label}:{" "}
     <button
       onClick={() => downloadFile(url, filename)}
-      className="text-blue-600 underline hover:text-blue-800"
+      className=" text-gray-100 hover:text-xl px-3 py-1 my-3 box-border rounded bg-blue-900 hover:bg-blue-400"
     >
       Download
     </button>
