@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import axiosInstance from "../axiosInstance/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,12 +39,19 @@ const StudentUploadForm = () => {
     acceptanceLetter: null,
     semesterReports: [],
     invoices: [],
+    invoiceDescriptions: [],
     contractState: null,
     parentsConsent: null,
     paymentDetails: [],
   });
 
   const token = localStorage.getItem("token");
+  const [options, setOptions] = useState({
+  country: [],
+  university: [],
+  year: [],
+});
+
 
   // ✅ Handle Input Changes
   const handleInputChange = (e) => {
@@ -71,6 +78,7 @@ const handleProfileChange = (e) => {
   };
 
    const uploadSingleFile = async (file, type) => {
+    console.log("Uploading:", file);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
@@ -96,37 +104,60 @@ const handleProfileChange = (e) => {
   };
 
   // ✅ Submit Form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true); // ✅ Start loading
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
+  try {
+    const uploadedData = {};
+
+   for (let key in files) {
+  if (!files[key]) continue;
+
+  // ✅ Skip invoiceDescriptions explicitly (not a file)
+  if (key === "invoiceDescriptions") continue;
+
+  if (key === "invoices") {
+    const invoiceUrls = await uploadMultipleFiles(files.invoices, "invoices");
+    const invoiceData = invoiceUrls.map((url, idx) => ({
+      url,
+      description: files.invoiceDescriptions?.[idx] || "",
+    }));
+    uploadedData.invoices = invoiceData;
+  } else if (Array.isArray(files[key]) && files[key][0] instanceof File) {
+    uploadedData[key] = await uploadMultipleFiles(files[key], key);
+  } else if (files[key] instanceof File) {
+    uploadedData[key] = await uploadSingleFile(files[key], key);
+  }
+}
+
+    const payload = { ...form, ...uploadedData };
+
+    await axiosInstance.put("/api/students/update-profile", payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    toast.success("Profile and files uploaded successfully!");
+  } catch (err) {
+    toast.error("Upload failed");
+    console.error("Update Profile Error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  const fetchOptions = async () => {
     try {
-     const uploadedData = {};
-      for (let key in files) {
-        if (files[key]) {
-          if (Array.isArray(files[key])) {
-            uploadedData[key] = await uploadMultipleFiles(files[key], key);
-          } else {
-            uploadedData[key] = await uploadSingleFile(files[key], key);
-          }
-        }
-      }
-
-
-      const payload = { ...form, ...uploadedData };
-
-      await axiosInstance.put("/api/students/update-profile", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success("Profile and files uploaded successfully!");
-    } catch (err) {
-      toast.error("Upload failed");
-      console.error("Update Profile Error:", err);
-    } finally {
-      setLoading(false); // ✅ Stop loading
+      const res = await axiosInstance.get("/api/options");
+      setOptions(res.data);
+    } catch (error) {
+      console.error("Failed to fetch options:", error);
     }
   };
+
+  fetchOptions();
+}, []);
 
   return (
 
@@ -177,6 +208,7 @@ const handleProfileChange = (e) => {
             { label: "WhatsApp Number", name: "whatsapp" },
             { label: "Parent's Email", name: "parentsEmail", type: "email" },
             { label: "Parent's WhatsApp No", name: "parentsWhatsapp" },
+            { label: "courseName", name: "courseName" },
           ].map((item, i) => (
             <div key={i}>
               <label className="block font-semibold">{item.label}</label>
@@ -201,10 +233,11 @@ const handleProfileChange = (e) => {
               className="w-full border rounded p-2 text-gray-800"
             >
               <option value="">Select</option>
-              {["India", "China", "USA", "Australia", "UK"].map((c) => (
+              {options.country.map((c) => (
                 <option key={c}>{c}</option>
               ))}
             </select>
+
           </div>
           <div>
             <label className="block font-semibold">Year of Admission</label>
@@ -213,32 +246,34 @@ const handleProfileChange = (e) => {
               onChange={handleInputChange}
               className="w-full border rounded p-2 text-gray-800"
             >
-              {Array.from({ length: 10 }, (_, i) => 2023 + i).map((year) => (
-                <option key={year}>{year}</option>
+               <option value="">Select</option>
+               {options.year.map((c) => (
+                <option key={c}>{c}</option>
               ))}
             </select>
           </div>
-          {[
-            { label: "University Name", name: "universityName" },
-            { label: "Course Name", name: "courseName" },
-          ].map((item, i) => (
-            <div key={i}>
-              <label className="block font-semibold">{item.label}</label>
-              <input
-                type="text"
-                name={item.name}
+          <div>
+              <label className="block font-semibold">University Name</label>
+              <select
+                name="universityName"
                 onChange={handleInputChange}
                 className="w-full border rounded p-2 text-gray-800"
-              />
+              >
+                <option value="">Select</option>
+                {options.university.map((uni) => (
+                  <option key={uni}>{uni}</option>
+                ))}
+              </select>
             </div>
-          ))}
+
           <div>
             <label className="block font-semibold">Current Year</label>
+            
             <select
               name="currentYear"
               onChange={handleInputChange}
               className="w-full border rounded p-2 text-gray-800"
-            >
+            > <option value="">Select</option>
               {[1, 2, 3, 4, 5].map((y) => (
                 <option key={y}>{y}</option>
               ))}
@@ -267,6 +302,7 @@ const handleProfileChange = (e) => {
           ))}
         </div>
 
+
         {/* ✅ PROFILE IMAGE */}
         <h3 className="text-xl font-bold mt-6">Profile Image</h3>
         <div className="flex items-center gap-4">
@@ -293,6 +329,42 @@ const handleProfileChange = (e) => {
 
         {/* ✅ DOCUMENT UPLOADS */}
         <h3 className="text-xl font-bold mt-6">Document Uploads</h3>
+
+         <div className="rounded-xl shadow-lg p-6 bg-white/30 backdrop-blur-md border border-white/40">
+              <label className="block font-semibold text-red-700 mb-2">Invoices</label>
+              <input
+                type="file"
+                multiple
+                onChange={(e) => {
+                  const invoiceFiles = Array.from(e.target.files);
+                  const descriptions = invoiceFiles.map(() => "");
+                  setFiles({
+                    ...files,
+                    invoices: invoiceFiles,
+                    invoiceDescriptions: descriptions,
+                  });
+                }}
+                className="w-full mb-4"
+              />
+
+          {files.invoices?.map((file, index) => (
+            <div key={index} className="mb-4">
+              <p className="text-white font-semibold mb-1">{file.name}</p>
+              <textarea
+                placeholder="Enter description for this invoice..."
+                className="w-full p-2 rounded border text-gray-800"
+                value={files.invoiceDescriptions?.[index] || ""}
+                onChange={(e) => {
+                  const updated = [...files.invoiceDescriptions];
+                  updated[index] = e.target.value;
+                  setFiles({ ...files, invoiceDescriptions: updated });
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-semibold">Passport Bio Page</label>
@@ -365,24 +437,14 @@ const handleProfileChange = (e) => {
               onChange={(e) => handleFileChange(e, "parentsConsent")}
               className="w-full"
             />
-          </div>
-
-          <div className=" text-red-700">
-            <label className="block font-semibold text-red-700 rounded" >Invoices</label>
-            <input
-              type="file"
-              multiple
-              onChange={(e) => handleFileChange(e, "invoices", true)}
-              className="w-full "
-            />
-          </div>
+          </div>         
 
         </div>
 
         {/* ✅ PAYMENT DETAILS */}
-        <h3 className="text-xl font-bold mt-6">Payment Details Upload</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((sem) => (
+        <h3 className="text-xl font-bold mt-6">Semester Invoices Upload</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+          {[''].map((sem) => (
             <div key={sem}>
               <label className="block font-semibold">
                 Year - Semester {sem}

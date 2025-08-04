@@ -117,7 +117,7 @@ const downloadFile = async (url, filename) => {
         <h3 className="text-xl font-semibold text-purple-100 mt-8 mb-3 ">
           Uploaded Documents
         </h3>
-        <ul className=" text-gray-100 list-disc pl-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <ul className=" text-gray-100  pl-5 grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {profile.passportBio && (
             <FileItem
@@ -189,22 +189,29 @@ const downloadFile = async (url, filename) => {
 
           {Array.isArray(profile.invoices) &&
             profile.invoices.map((file, i) => (
-              <FileItem
-                key={i}
-                label={`Invoice ${i + 1}`}
-                url={file}
-                filename={`invoice_${i + 1}`}
-                downloadFile={downloadFile}
-              />
+              <div key={i} className="mb-4 rounded-xl bg-white/10 backdrop-blur-md mx-4 px-2 py-2">
+                <FileItem
+                  label={`Invoice ${i + 1}`}
+                  url={file.url}            
+                  filename={`invoice_${i + 1}`}
+                  downloadFile={downloadFile}
+                />
+                {file.description && (
+                  <p className="text-sm text-gray-100 mt-1 ml-1">
+                    <span className="font-bold">📝 Description :</span> {file.description}
+                  </p>
+                )}
+              </div>
             ))}
+
 
           {Array.isArray(profile.paymentDetails) &&
             profile.paymentDetails.map((file, i) => (
               <FileItem
                 key={i}
-                label={`Payment Proof ${i + 1}`}
+                label={`Semester Invoice ${i + 1}`}
                 url={file}
-                filename={`payment_proof_${i + 1}`}
+                filename={`Semester_invoice_${i + 1}`}
                 downloadFile={downloadFile}
               />
             ))}
