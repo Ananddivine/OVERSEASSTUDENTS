@@ -196,8 +196,8 @@ useEffect(() => {
               className="w-full border rounded p-2 text-gray-800"
             >
               <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
           </div>
 
