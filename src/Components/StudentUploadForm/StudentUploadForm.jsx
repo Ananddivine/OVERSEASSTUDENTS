@@ -18,6 +18,7 @@ const StudentUploadForm = () => {
     whatsapp: "",
     parentsEmail: "",
     parentsWhatsapp: "",
+    guardiansWhatsapp: "",
     countryOfStudy: "",
     yearOfAdmission: "",
     universityName: "",
@@ -208,6 +209,7 @@ useEffect(() => {
             { label: "WhatsApp Number", name: "whatsapp" },
             { label: "Parent's Email", name: "parentsEmail", type: "email" },
             { label: "Parent's WhatsApp No", name: "parentsWhatsapp" },
+            { label: "Guardians's WhatsApp No", name: "guardiansWhatsapp" },
             { label: "courseName", name: "courseName" },
           ].map((item, i) => (
             <div key={i}>
@@ -215,6 +217,7 @@ useEffect(() => {
               <input
                 type={item.type || "text"}
                 name={item.name}
+                value={form[item.name]}  
                 onChange={handleInputChange}
                 className="w-full border rounded p-2 text-gray-800"
               />

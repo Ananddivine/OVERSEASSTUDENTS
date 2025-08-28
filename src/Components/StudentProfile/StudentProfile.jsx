@@ -83,10 +83,8 @@ const downloadFile = async (url, filename) => {
           <ProfileField label="Email ID" value={profile.email} />
           <ProfileField label="WhatsApp" value={profile.whatsapp} />
           <ProfileField label="Parent Email" value={profile.parentsEmail} />
-          <ProfileField
-            label="Parent WhatsApp"
-            value={profile.parentsWhatsapp}
-          />
+          <ProfileField label="Parent WhatsApp" value={profile.parentsWhatsapp}/>
+          <ProfileField label="Guardian's WhatsApp" value={profile.guardiansWhatsapp}/>
         </div>
 
         {/* ✅ Academic Details */}
