@@ -205,11 +205,11 @@ useEffect(() => {
           {[
             { label: "Home District", name: "homeDistrict" },
             { label: "Home Province", name: "homeProvince" },
-            { label: "Email", name: "email", type: "email" },
-            { label: "WhatsApp Number", name: "whatsapp" },
+            { label: "Student Email", name: "email", type: "email" },
+            { label: "Student WhatsApp Number", name: "whatsapp" },
             { label: "Parent's Email", name: "parentsEmail", type: "email" },
-            { label: "Parent's WhatsApp No", name: "parentsWhatsapp" },
-            { label: "Guardians's WhatsApp No", name: "guardiansWhatsapp" },
+            { label: "Parent's Number", name: "parentsWhatsapp" },
+            { label: "Guardians's Number", name: "guardiansWhatsapp" },
             { label: "courseName", name: "courseName" },
           ].map((item, i) => (
             <div key={i}>
@@ -307,7 +307,7 @@ useEffect(() => {
 
 
         {/* ✅ PROFILE IMAGE */}
-        <h3 className="text-xl font-bold mt-6">Profile Image</h3>
+        <h3 className="text-xl font-bold mt-6">Student Photo</h3>
         <div className="flex items-center gap-4">
           <div className="w-32 h-32 border-2 border-dashed border-gray-400 rounded overflow-hidden relative cursor-pointer">
             {profileImage ? (
