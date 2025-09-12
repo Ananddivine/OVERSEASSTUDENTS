@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ForgotPassword from '../../Components/Login/ForgotPassword';
 import StudentUploadForm from '../../Components/StudentUploadForm/StudentUploadForm';
 import StudentProfile from '../../Components/StudentProfile/StudentProfile';
+import StudentTasks from '../../Components/Tasks/StudentTasks';
+import ShowTask from '../../Components/Tasks/ShowTask';
 
 
 const Admin = () => {
@@ -18,6 +20,8 @@ const Admin = () => {
           <Route path="/ForgotPassword" element={<ForgotPassword />} />    
           <Route path="/StudentProfile" element={<StudentProfile />} />       
           <Route path="/StudentUploadForm" element={<StudentUploadForm />} />          
+          <Route path="/StudentTasks" element={<StudentTasks />} />          
+         <Route path="/ShowTask/:taskId" element={<ShowTask />} /> 
                    
           <Route path="*" element={<Navigate to="StudentUploadForm" />} />
 

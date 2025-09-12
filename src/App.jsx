@@ -7,6 +7,8 @@ import Footer from "./Components/Footer/Footer";
 import "./index.css";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
+
+
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const PING_INTERVAL = 1 * 60 * 1000;
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import navlogo from '../../assets/stem.jpg';
 import { useNavigate, useLocation } from 'react-router-dom'; // ✅ Import useLocation
 import axiosInstance from '../axiosInstance/axiosInstance';
+import { FaDotCircle, FaBell } from "react-icons/fa";
 
 const Navbar = ({ setToken }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -10,7 +11,7 @@ const Navbar = ({ setToken }) => {
   const navigate = useNavigate();
   const location = useLocation(); // ✅ To detect current page
   const userEmail = localStorage.getItem('userEmail');
-
+ const [unreadCount, setUnreadcount]= useState(0)
   // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
@@ -48,16 +49,32 @@ const Navbar = ({ setToken }) => {
   // ✅ Handle navigation based on current page
   const handleProfileClick = () => {
     if (location.pathname === '/StudentProfile') {
-      navigate('/StudentUploadForm'); // ✅ Go back to upload page
+      navigate('/StudentUploadForm');
     } else {
-      navigate('/StudentProfile'); // ✅ Go to profile page
+      navigate('/StudentProfile'); 
     }
     setDropdownOpen(false);
   };
 
+  const handleOnclickTasks = () => {
+    navigate('/StudentTasks')
+  }
   return (
     <div className="relative flex items-center justify-between bg-red-600 shadow-md px-5 py-3">
-      <img src={navlogo} alt="Logo" className="h-16 ml-20" />
+       <img src={navlogo} alt="Logo" className="h-16 ml-20" />
+            <div className="flex items-center space-x-6">               
+              <div className="relative cursor-pointer" onClick={handleOnclickTasks}>
+                <FaBell className="text-gray-100 text-2xl hover:text-gray-900" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold rounded-full px-1 border border-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+              </div>         
+            
+  
+     
       <div className="flex items-center space-x-6">
         <div className="relative" ref={dropdownRef}>
           <div
