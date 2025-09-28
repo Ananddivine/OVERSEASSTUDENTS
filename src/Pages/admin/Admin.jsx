@@ -5,6 +5,7 @@ import StudentUploadForm from '../../Components/StudentUploadForm/StudentUploadF
 import StudentProfile from '../../Components/StudentProfile/StudentProfile';
 import StudentTasks from '../../Components/Tasks/StudentTasks';
 import ShowTask from '../../Components/Tasks/ShowTask';
+import StudentRequests from '../../Components/StudentRequests/StudentRequests';
 
 
 const Admin = () => {
@@ -22,6 +23,7 @@ const Admin = () => {
           <Route path="/StudentUploadForm" element={<StudentUploadForm />} />          
           <Route path="/StudentTasks" element={<StudentTasks />} />          
          <Route path="/ShowTask/:taskId" element={<ShowTask />} /> 
+         <Route path="/StudentRequests" element={<StudentRequests />} /> 
                    
           <Route path="*" element={<Navigate to="StudentUploadForm" />} />
 

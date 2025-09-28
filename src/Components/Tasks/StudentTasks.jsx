@@ -97,50 +97,7 @@ const handleRowClick = (task) => {
    <div className=" text-center w-full items-center mx-3" >
       <h2 className="text-2xl font-semibold mb-4">My Tasks</h2>
 
-      {/* Filters */}
-      <div className="bg-gray-300 py-4 px-2 mb-4 flex space-x-6">
-        <div>
-          <button onClick={toggleDateFilter} className="bg-gray-800 text-white px-4 py-2 rounded">
-            {showDateFilter ? "Hide Date Filter" : "Show Date Filter 📅"}
-          </button>
-          {showDateFilter && (
-            <div className="absolute z-50 bg-white shadow-lg rounded-lg mt-2">
-              <DateRange ranges={[dateRange]} onChange={handleDateChange} moveRangeOnFirstSelection={false} />
-            </div>
-          )}
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Filter by status"
-            value={filters.status}
-            onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
-            className="px-3 py-1 border rounded"
-          />
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Filter by assigned"
-            value={filters.assigned}
-            onChange={(e) => setFilters((prev) => ({ ...prev, assigned: e.target.value }))}
-            className="px-3 py-1 border rounded"
-          />
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Filter by connect"
-            value={filters.connect}
-            onChange={(e) => setFilters((prev) => ({ ...prev, connect: e.target.value }))}
-            className="px-3 py-1 border rounded"
-          />
-        </div>
-      </div>
-
+  
       {/* Table */}
       <div className="bg-white shadow-md rounded overflow-hidden">
         <table className="w-full border-collapse">

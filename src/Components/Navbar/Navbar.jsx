@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import navlogo from '../../assets/stem.jpg';
-import { useNavigate, useLocation } from 'react-router-dom'; // ✅ Import useLocation
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import axiosInstance from '../axiosInstance/axiosInstance';
 import { FaDotCircle, FaBell } from "react-icons/fa";
 
@@ -9,10 +9,10 @@ const Navbar = ({ setToken }) => {
   const [profile, setProfile] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ To detect current page
+  const location = useLocation(); 
   const userEmail = localStorage.getItem('userEmail');
  const [unreadCount, setUnreadcount]= useState(0)
-  // Fetch profile on mount
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -33,7 +33,7 @@ const Navbar = ({ setToken }) => {
     localStorage.removeItem('userEmail');
     setToken('');
     setDropdownOpen(false);
-    navigate('/'); // Redirect to home or login after logout (optional)
+    navigate('/');
   };
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Navbar = ({ setToken }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ✅ Handle navigation based on current page
+  
   const handleProfileClick = () => {
     if (location.pathname === '/StudentProfile') {
       navigate('/StudentUploadForm');
@@ -58,6 +58,10 @@ const Navbar = ({ setToken }) => {
 
   const handleOnclickTasks = () => {
     navigate('/StudentTasks')
+  }
+
+  const handleTickets = () => {
+    navigate('/StudentRequests')
   }
   return (
     <div className="relative flex items-center justify-between bg-red-600 shadow-md px-5 py-3">
@@ -72,8 +76,6 @@ const Navbar = ({ setToken }) => {
                 )}
               </div>
               </div>         
-            
-  
      
       <div className="flex items-center space-x-6">
         <div className="relative" ref={dropdownRef}>
@@ -107,6 +109,9 @@ const Navbar = ({ setToken }) => {
                     ? 'GO BACK TO UPLOAD PROFILE'
                     : 'CLICK SEE YOUR PROFILE'}
                 </p>
+              </div>
+              <div>
+                <p className="text-sm cursor-pointer hover:text-blue-700 ml-1 px-1 py-2" onClick={handleTickets}>Tickets Rise</p>
               </div>
               <button
                 onClick={handleLogout}
