@@ -4,7 +4,9 @@ import axiosInstance from "../axiosInstance/axiosInstance";
 export default function StudentRequests() {
   const [requests, setRequests] = useState([]);
   const [form, setForm] = useState({ title: "", description: "" });
+  const [files, setFiles] = useState([]); // attachments for new ticket
   const [comment, setComment] = useState({});
+  const [commentFiles, setCommentFiles] = useState({}); // attachments for each comment
 
   useEffect(() => {
     fetchMyRequests();
@@ -15,17 +17,37 @@ export default function StudentRequests() {
     setRequests(res.data);
   };
 
+  // ------------------- NEW TICKET -------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axiosInstance.post("/api/requests", form);
+    const formData = new FormData();
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    files.forEach((file) => formData.append("attachments", file));
+
+    await axiosInstance.post("/api/requests", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
     setForm({ title: "", description: "" });
+    setFiles([]);
     fetchMyRequests();
   };
 
+  // ------------------- ADD COMMENT -------------------
   const handleComment = async (id) => {
-    if (!comment[id]) return;
-    await axiosInstance.post(`/api/requests/${id}/comment`, { text: comment[id] });
+    if (!comment[id] && !(commentFiles[id] && commentFiles[id].length)) return;
+
+    const formData = new FormData();
+    formData.append("text", comment[id] || "");
+    (commentFiles[id] || []).forEach((file) => formData.append("attachments", file));
+
+    await axiosInstance.post(`/api/requests/${id}/comment`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
     setComment({ ...comment, [id]: "" });
+    setCommentFiles({ ...commentFiles, [id]: [] });
     fetchMyRequests();
   };
 
@@ -50,6 +72,12 @@ export default function StudentRequests() {
           className="w-full p-2 border rounded"
           required
         />
+        <input
+          type="file"
+          multiple
+          onChange={(e) => setFiles([...e.target.files])}
+          className="w-full border p-2 rounded"
+        />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
           Raise Ticket
         </button>
@@ -63,18 +91,57 @@ export default function StudentRequests() {
             <p>{req.description}</p>
             <p className="text-sm text-gray-600">Status: {req.status}</p>
 
+            {/* Attachments */}
+            {req.attachments?.length > 0 && (
+              <div className="mt-2">
+                <h4 className="font-semibold text-sm">Attachments:</h4>
+                {req.attachments.map((att, i) => (
+                  <div key={i}>
+                    <a
+                      href={att.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline text-sm"
+                    >
+                      {att.name}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Comments Thread */}
             <div className="mt-3 bg-gray-100 p-2 rounded">
               <h4 className="font-semibold">Conversation</h4>
               {req.comments?.map((c, i) => (
-                <p key={i} className="text-sm text-gray-700">
-                  <span className="font-semibold text-blue-600">
-                    {c.user?.name || "User"} ({c.user?.role || "student"}):
-                  </span>{" "}
-                  {c.text}
-                </p>
+                <div key={i} className="mb-2">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold text-blue-600">
+                      {c.user?.fullName || "User"} ({c.user?.role || "student"}):
+                    </span>{" "}
+                    {c.text}
+                  </p>
+                  {c.attachments?.length > 0 && (
+                    <div className="ml-4">
+                      {c.attachments.map((att, j) => (
+                        <div key={j}>
+                          <a
+                            href={att.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline text-sm"
+                          >
+                            {att.name}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
-              <div className="flex mt-2">
+
+              {/* Reply with attachments */}
+              <div className="flex flex-col mt-2 space-y-2">
                 <input
                   type="text"
                   placeholder="Reply..."
@@ -82,9 +149,15 @@ export default function StudentRequests() {
                   onChange={(e) => setComment({ ...comment, [req._id]: e.target.value })}
                   className="flex-1 border p-1 rounded text-sm"
                 />
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) => setCommentFiles({ ...commentFiles, [req._id]: [...e.target.files] })}
+                  className="border p-1 rounded text-sm"
+                />
                 <button
                   onClick={() => handleComment(req._id)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded ml-2 text-sm"
+                  className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
                 >
                   Send
                 </button>
